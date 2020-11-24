@@ -8,13 +8,17 @@ class Move
   }
 
   attr_reader :value, :loses_to, :wins_against
+  
+  include Comparable
 
-  def >(other_move)
-    wins_against.include? other_move.value
-  end
-
-  def <(other_move)
-    loses_to.include? other_move.value
+  def <=>(other_move)
+    if self.wins_against.include? other_move.value
+      1
+    elsif other_move.wins_against.include? self.value
+      -1
+    else
+      0
+    end
   end
 
   def to_s
@@ -25,7 +29,6 @@ end
 class Rock < Move
   def initialize
     @value = "rock"
-    @loses_to = ["paper", "spock"]
     @wins_against = ["scissors", "lizard"]
   end
 end
@@ -33,7 +36,6 @@ end
 class Paper < Move
   def initialize
     @value = "paper"
-    @loses_to = ["scissors", "lizard"]
     @wins_against = ["rock", "spock"]
   end
 end
@@ -41,7 +43,6 @@ end
 class Scissors < Move
   def initialize
     @value = "scissors"
-    @loses_to = ["rock", "spock"]
     @wins_against = ["paper", "lizard"]
   end
 end
@@ -49,7 +50,6 @@ end
 class Lizard < Move
   def initialize
     @value = "lizard"
-    @loses_to = ["rock", "scissors"]
     @wins_against = ["spock", "paper"]
   end
 end
@@ -57,7 +57,6 @@ end
 class Spock < Move
   def initialize
     @value = "spock"
-    @loses_to = ["paper", "lizard"]
     @wins_against = ["scissors", "rock"]
   end
 end
@@ -377,7 +376,7 @@ class RPSGame
   def players_choose
     human.choose
     computer.choose(human.history)
-    # clear_screen
+    clear_screen
   end
 
   def reset_scores
