@@ -62,19 +62,11 @@ class Board
 
   private
 
-  def include_marker(squares, marker)
-    squares.map(&:marker).include?(marker)
-  end
-
   def three_same_markers?(squares)
     markers = squares.select(&:marked?).collect(&:marker)
     return false if markers.size != 3
 
     markers.min == markers.max
-  end
-
-  def two_same_markers?(squares, marker)
-    squares.collect(&:marker).count(marker) == 2
   end
 end
 
@@ -176,7 +168,7 @@ class Player
   MARKER_OPTIONS = {
     1 => 'X', 2 => 'O', 3 => '!',
     4 => '#', 5 => '+', 6 => '@'
-  }.freeze
+  }
 
   attr_accessor :score, :name, :marker
   attr_reader :board
@@ -255,13 +247,12 @@ class Human < Player
 
       puts "Sorry, that's not a valid choice."
     end
-
     board[square.to_i] = marker
   end
 end
 
 class Computer < Player
-  COMPUTER_NAMES = ['Bot', 'Super Computer', 'BB8', 'Jarvis', 'Skynet'].freeze
+  COMPUTER_NAMES = ['Bot', 'Super Computer', 'BB8', 'Jarvis', 'Skynet']
 
   def set_name
     @name = COMPUTER_NAMES.sample
@@ -445,11 +436,11 @@ class TTTGame
     human.score == WINNING_SCORE || computer.score == WINNING_SCORE
   end
 
-  def play_game_again?
+  def continue_playing?
     answer = nil
     loop do
       puts ''
-      puts 'Would you like to play again? (y/n)'
+      puts 'Would you like to continue playing? (y/n)'
       answer = gets.chomp.downcase
       break if %w(y n).include? answer
 
@@ -498,7 +489,7 @@ class TTTGame
       game_round
       break if grand_winner?
       board.winning_marker == human.marker ? display_kudos : display_support
-      break unless play_game_again?
+      break unless continue_playing?
       reset
     end
     display_grand_winner
