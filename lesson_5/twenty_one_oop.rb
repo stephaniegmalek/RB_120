@@ -108,12 +108,16 @@ class Participant
 end
 
 class Player < Participant
+  def valid_name?(n)
+    !!(n.match(/[^A-Za-z]/))
+  end
+
   def set_name
     n = nil
     loop do
       puts "What's your name?"
       n = gets.chomp.strip
-      break unless n.empty? || !!(n.match(/[^A-Za-z]/))
+      break unless n.empty? || valid_name?(n)
       puts "Sorry, must enter your name with only alphabetical charaters"
     end
     self.name = n.capitalize
@@ -164,14 +168,14 @@ class TwentyOne
     system('clear') || system('cls')
   end
 
-  def reset
+  def reset_cards
     self.deck = Deck.new
     player.cards = []
     dealer.cards = []
   end
 
   def match_reset
-    reset
+    reset_cards
     player.score = 0
     dealer.score = 0
   end
@@ -320,6 +324,17 @@ class TwentyOne
     end
   end
 
+  def play_another_hand?
+    answer = nil
+    loop do
+      puts "\nWould you like to play another hand? (y/n)"
+      answer = gets.chomp.downcase
+      break if %w(y n).include?(answer)
+      puts "\nSorry, must enter y or n."
+    end
+    answer == 'y'
+  end
+
   def play_again?
     answer = nil
     loop do
@@ -331,7 +346,7 @@ class TwentyOne
     answer == 'y'
   end
 
-  def game_into
+  def game_intro
     clear
     puts "\nWelcome to Twenty One #{player.name}!"
     puts <<-MSG
@@ -366,7 +381,7 @@ Good luck!
       participants_play
       break if grand_winner?
 
-      play_again? ? reset : break
+      play_another_hand? ? reset_cards : break
     end
   end
 
@@ -410,7 +425,7 @@ Good luck!
   public
 
   def start
-    game_into
+    game_intro
     play_game
     display_goodbye_message
   end
